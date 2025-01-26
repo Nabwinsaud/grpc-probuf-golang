@@ -1,0 +1,40 @@
+syntax = "proto3";
+import "address.proto";
+
+package user;
+
+option go_package = "user.proto";
+
+message User {
+    int32 id = 1;
+    string name = 2;
+
+
+    enum Gender {
+        male = 0;
+        female = 1;
+    }
+
+    Gender gender = 3;
+
+    message Address {
+        int32 zipcode = 1;
+        string line_address = 2;
+    }
+   address.Address address = 4;
+
+   repeated string hobbies = 6;
+
+   reserved 7;
+   reserved "users";
+
+
+//    repeated User users = 7; // its recursive right ?
+// while removing the filed its always a best practice 
+
+//    map<string,string> metadata = 19000;
+   map<string,string> metadata = 8;
+
+
+}
+

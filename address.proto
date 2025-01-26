@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+option go_package = "address.proto";
+
+package address;
+message Address {}
