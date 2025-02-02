@@ -111,3 +111,20 @@ go run server.go
 go run client.go
 
 ``` 
+
+
+
+Expected output:
+
+``go run server/server.go``
+```bash 
+Payment body 123 seconds:1738479306 nanos:983814142 STRIPE
+```
+
+
+ ``go run client/client.go``
+
+```bash
+payment created successfully: payment_id:"123"  status:"success"  payment_date:"2025-01-26"  payment_details:{stripe_payment_id:"stripe123"}  created_at:{seconds:1738479306  nanos:983814142}  payment_link_expiry:{seconds:60000000000}
+
+```

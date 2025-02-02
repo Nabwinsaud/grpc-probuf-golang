@@ -21,8 +21,15 @@ func (s *server) CreatePayment(ctx context.Context, req *payment_pb.PaymentReque
 	return &payment_pb.PaymentResponse{
 		Message: "Payment created successfully",
 		Payment: &payment_pb.Payment{
-			PaymentId: req.PaymentId,
-			Status:    req.Status,
+			PaymentId:     req.PaymentId,
+			Status:        req.Status,
+			CreatedAt:     req.CreatedAt,
+			PaymentMethod: req.PaymentMethod,
+			PaymentDate:   req.PaymentDate,
+			PaymentDetails: &payment_pb.PaymentDetails{
+				StripePaymentId: req.PaymentDetails.StripePaymentId,
+			},
+			PaymentLinkExpiry: req.PaymentLinkExpiry,
 		},
 	}, nil
 }

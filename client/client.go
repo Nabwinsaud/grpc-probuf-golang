@@ -8,12 +8,14 @@ import (
 
 	payment_pb "github.com/Nabwinsaud/microservices-gang/proto/gen/proto"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func main() {
-	// creds := credentials.NewTLS(nil)
-	conn, err := grpc.NewClient("localhost:5051", grpc.WithInsecure())
+	//* grpc.Dial and grpc.WithInsecure is deprecated
+	conn, err := grpc.NewClient("localhost:5051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal("error occurred while connecting to grpc server", err)
 	}
@@ -29,6 +31,9 @@ func main() {
 			StripePaymentId: "stripe123",
 		},
 		CreatedAt: timestamppb.New(time.Now()),
+		PaymentLinkExpiry: &durationpb.Duration{
+			Seconds: int64(time.Second * 60),
+		},
 	}
 
 	res, err := client.CreatePayment(context.Background(), payment)
