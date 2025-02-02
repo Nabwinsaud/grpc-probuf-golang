@@ -7,26 +7,123 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 
-export const protobufPackage = "";
+export const protobufPackage = "payment";
+
+export enum PaymentMethod {
+  STRIPE = 0,
+  PAYPAL = 1,
+  GOOGLE_PAY = 2,
+  CREDIT_CARD = 3,
+  CASH_ON_DELIVERY = 4,
+  UNRECOGNIZED = -1,
+}
+
+export function paymentMethodFromJSON(object: any): PaymentMethod {
+  switch (object) {
+    case 0:
+    case "STRIPE":
+      return PaymentMethod.STRIPE;
+    case 1:
+    case "PAYPAL":
+      return PaymentMethod.PAYPAL;
+    case 2:
+    case "GOOGLE_PAY":
+      return PaymentMethod.GOOGLE_PAY;
+    case 3:
+    case "CREDIT_CARD":
+      return PaymentMethod.CREDIT_CARD;
+    case 4:
+    case "CASH_ON_DELIVERY":
+      return PaymentMethod.CASH_ON_DELIVERY;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return PaymentMethod.UNRECOGNIZED;
+  }
+}
+
+export function paymentMethodToJSON(object: PaymentMethod): string {
+  switch (object) {
+    case PaymentMethod.STRIPE:
+      return "STRIPE";
+    case PaymentMethod.PAYPAL:
+      return "PAYPAL";
+    case PaymentMethod.GOOGLE_PAY:
+      return "GOOGLE_PAY";
+    case PaymentMethod.CREDIT_CARD:
+      return "CREDIT_CARD";
+    case PaymentMethod.CASH_ON_DELIVERY:
+      return "CASH_ON_DELIVERY";
+    case PaymentMethod.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
 
 export interface Payment {
   paymentId: string;
+  status: string;
+  paymentMethod: PaymentMethod;
+  paymentDate: string;
+  stripePaymentId?: string | undefined;
+  paypalPaymentId?: string | undefined;
+  googlePayPaymentId?: string | undefined;
+  creditCardPaymentId?: string | undefined;
+  cashOnDeliveryPaymentId?: string | undefined;
 }
 
 function createBasePayment(): Payment {
-  return { paymentId: "" };
+  return {
+    paymentId: "",
+    status: "",
+    paymentMethod: 0,
+    paymentDate: "",
+    stripePaymentId: undefined,
+    paypalPaymentId: undefined,
+    googlePayPaymentId: undefined,
+    creditCardPaymentId: undefined,
+    cashOnDeliveryPaymentId: undefined,
+  };
 }
 
 export const Payment: MessageFns<Payment> = {
-  encode(message: Payment, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: Payment,
+    writer: BinaryWriter = new BinaryWriter()
+  ): BinaryWriter {
     if (message.paymentId !== "") {
       writer.uint32(10).string(message.paymentId);
+    }
+    if (message.status !== "") {
+      writer.uint32(18).string(message.status);
+    }
+    if (message.paymentMethod !== 0) {
+      writer.uint32(24).int32(message.paymentMethod);
+    }
+    if (message.paymentDate !== "") {
+      writer.uint32(34).string(message.paymentDate);
+    }
+    if (message.stripePaymentId !== undefined) {
+      writer.uint32(42).string(message.stripePaymentId);
+    }
+    if (message.paypalPaymentId !== undefined) {
+      writer.uint32(50).string(message.paypalPaymentId);
+    }
+    if (message.googlePayPaymentId !== undefined) {
+      writer.uint32(58).string(message.googlePayPaymentId);
+    }
+    if (message.creditCardPaymentId !== undefined) {
+      writer.uint32(66).string(message.creditCardPaymentId);
+    }
+    if (message.cashOnDeliveryPaymentId !== undefined) {
+      writer.uint32(74).string(message.cashOnDeliveryPaymentId);
     }
     return writer;
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): Payment {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePayment();
     while (reader.pos < end) {
@@ -40,6 +137,70 @@ export const Payment: MessageFns<Payment> = {
           message.paymentId = reader.string();
           continue;
         }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.status = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.paymentMethod = reader.int32() as any;
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.paymentDate = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.stripePaymentId = reader.string();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.paypalPaymentId = reader.string();
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.googlePayPaymentId = reader.string();
+          continue;
+        }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.creditCardPaymentId = reader.string();
+          continue;
+        }
+        case 9: {
+          if (tag !== 74) {
+            break;
+          }
+
+          message.cashOnDeliveryPaymentId = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -50,13 +211,63 @@ export const Payment: MessageFns<Payment> = {
   },
 
   fromJSON(object: any): Payment {
-    return { paymentId: isSet(object.paymentId) ? globalThis.String(object.paymentId) : "" };
+    return {
+      paymentId: isSet(object.paymentId)
+        ? globalThis.String(object.paymentId)
+        : "",
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
+      paymentMethod: isSet(object.paymentMethod)
+        ? paymentMethodFromJSON(object.paymentMethod)
+        : 0,
+      paymentDate: isSet(object.paymentDate)
+        ? globalThis.String(object.paymentDate)
+        : "",
+      stripePaymentId: isSet(object.stripePaymentId)
+        ? globalThis.String(object.stripePaymentId)
+        : undefined,
+      paypalPaymentId: isSet(object.paypalPaymentId)
+        ? globalThis.String(object.paypalPaymentId)
+        : undefined,
+      googlePayPaymentId: isSet(object.googlePayPaymentId)
+        ? globalThis.String(object.googlePayPaymentId)
+        : undefined,
+      creditCardPaymentId: isSet(object.creditCardPaymentId)
+        ? globalThis.String(object.creditCardPaymentId)
+        : undefined,
+      cashOnDeliveryPaymentId: isSet(object.cashOnDeliveryPaymentId)
+        ? globalThis.String(object.cashOnDeliveryPaymentId)
+        : undefined,
+    };
   },
 
   toJSON(message: Payment): unknown {
     const obj: any = {};
     if (message.paymentId !== "") {
       obj.paymentId = message.paymentId;
+    }
+    if (message.status !== "") {
+      obj.status = message.status;
+    }
+    if (message.paymentMethod !== 0) {
+      obj.paymentMethod = paymentMethodToJSON(message.paymentMethod);
+    }
+    if (message.paymentDate !== "") {
+      obj.paymentDate = message.paymentDate;
+    }
+    if (message.stripePaymentId !== undefined) {
+      obj.stripePaymentId = message.stripePaymentId;
+    }
+    if (message.paypalPaymentId !== undefined) {
+      obj.paypalPaymentId = message.paypalPaymentId;
+    }
+    if (message.googlePayPaymentId !== undefined) {
+      obj.googlePayPaymentId = message.googlePayPaymentId;
+    }
+    if (message.creditCardPaymentId !== undefined) {
+      obj.creditCardPaymentId = message.creditCardPaymentId;
+    }
+    if (message.cashOnDeliveryPaymentId !== undefined) {
+      obj.cashOnDeliveryPaymentId = message.cashOnDeliveryPaymentId;
     }
     return obj;
   },
@@ -67,21 +278,44 @@ export const Payment: MessageFns<Payment> = {
   fromPartial<I extends Exact<DeepPartial<Payment>, I>>(object: I): Payment {
     const message = createBasePayment();
     message.paymentId = object.paymentId ?? "";
+    message.status = object.status ?? "";
+    message.paymentMethod = object.paymentMethod ?? 0;
+    message.paymentDate = object.paymentDate ?? "";
+    message.stripePaymentId = object.stripePaymentId ?? undefined;
+    message.paypalPaymentId = object.paypalPaymentId ?? undefined;
+    message.googlePayPaymentId = object.googlePayPaymentId ?? undefined;
+    message.creditCardPaymentId = object.creditCardPaymentId ?? undefined;
+    message.cashOnDeliveryPaymentId =
+      object.cashOnDeliveryPaymentId ?? undefined;
     return message;
   },
 };
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends globalThis.Array<infer U>
+  ? globalThis.Array<DeepPartial<U>>
+  : T extends ReadonlyArray<infer U>
+  ? ReadonlyArray<DeepPartial<U>>
+  : T extends {}
+  ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

@@ -1,0 +1,87 @@
+
+syntax = "proto3";
+
+package payment;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
+// * you can change the name of the package as per your requirement but it always a good approach to make suffix of the package name with _pb
+option go_package= "payment_pb/";
+
+
+enum PaymentMethod {
+    STRIPE = 0;
+    PAYPAL = 1;
+    GOOGLE_PAY = 2;
+    CREDIT_CARD = 3;
+    CASH_ON_DELIVERY = 4;
+}
+message  PaymentDetails {
+    string stripe_payment_id = 5;
+    string paypal_payment_id = 6;
+    string google_pay_payment_id = 7;
+    string credit_card_payment_id = 8;
+    string cash_on_delivery_payment_id = 9;
+}
+
+//* this is just for the overview how the nested message will look like
+// message Payment {
+//     string payment_id =1; 
+//     string status = 2;
+//     PaymentMethod  payment_method= 3;
+//     string payment_date = 4;
+//     // oneof is used to define the one field from multiple fields
+//     oneof payment_details {
+//         string stripe_payment_id = 5;
+//         string paypal_payment_id = 6;
+//         string google_pay_payment_id = 7;
+//         string credit_card_payment_id = 8;
+//         string cash_on_delivery_payment_id = 9;
+//     }
+//     google.protobuf.Timestamp created_at = 10;
+
+//     google.protobuf.Duration payment_link_expiry = 11;
+
+// }
+
+message Payment {
+    string payment_id =1; 
+    string status = 2;
+    PaymentMethod  payment_method= 3;
+    string payment_date = 4;
+    // oneof is used to define the one field from multiple fields
+    PaymentDetails payment_details = 5;
+    google.protobuf.Timestamp created_at = 10;
+
+    google.protobuf.Duration payment_link_expiry = 11;
+}
+
+message Empty {}
+
+message PaymentList {
+    repeated Payment payments = 1;
+}
+
+message PaymentResponse {
+    string message = 1;
+    Payment payment = 2;
+}
+
+message PaymentRequest {
+    string payment_id = 1;
+    string status = 2;
+    PaymentMethod payment_method = 3;
+    string payment_date = 4;
+    PaymentDetails payment_details = 5;
+    google.protobuf.Timestamp created_at = 6;
+    google.protobuf.Duration payment_link_expiry = 7;
+}
+
+// for now okay but grpc auto add suffix "Service" and the service,not need to add Service i have above name Payment if named Payment it will causes conflicts
+service PaymentService {
+    rpc CreatePayment(PaymentRequest) returns (PaymentResponse);
+    rpc GetPayment(Empty) returns (PaymentList);
+    rpc UpdatePayment(PaymentResponse) returns (PaymentResponse);
+    rpc DeletePayment(PaymentRequest) returns (PaymentResponse);
+}
